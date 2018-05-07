@@ -52,58 +52,54 @@ recommend = function(g, uid, numr, measure){
     return(recom_id_list)
 }
 accuracy_measure = function(g, measure){
-    Nr = V(g)[V(g)$degree==4]$id
-    print("************")
-    print(Nr)
+    Nr = V(g)[V(g)$degree==24]$id
     acc1 = 0.0
     for(i in Nr){
-        print("+++++++++++++++++++")
+        print(i)
         acc2 = 0.0
         for(j in 1:10){
-            print("///////////////////")
             p = induced_subgraph(g, V(g))
-            neighbors_id = neighbors(p, which(V(p)$id==i))
+            neighbors_id = V(p)[neighbors(p, which(V(p)$id==i))]$id
             num_removal = ceiling(0.25*length(neighbors_id))
             if(num_removal==0){
                 print("no removal error")
             }
             else{
                 deleted_id = neighbors_id[sample(length(neighbors_id), num_removal, replace=FALSE)]
-                print(deleted_id)
                 num_e = ecount(p)
+                #print(deleted_id)
                 for(k in deleted_id){
-                    plot(p)
                     x = as.character(which(V(p)$id==i))
                     y = as.character(which(V(p)$id==k))
+                    #print(x)
+                    #print(y)
                     z = paste(x,y,sep="|")
                     p = delete_edges(p, z)
-                    plot(p)
                     if(ecount(p)==num_e){
                         print("edge number error")
                     }
                 }
-                print(recommend(p,i,num_removal, measure))
-                print(intersect(recommend(p, i, num_removal, measure), deleted_id))
+                #print(recommend(p,i,num_removal, measure))
+                #print(intersect(recommend(p, i, num_removal, measure), deleted_id))
                 acc2 = acc2 + length(intersect(recommend(p, i, num_removal, measure), deleted_id))/num_removal
             }
         }
         acc2 = acc2/10
         acc1 = acc1 + acc2
     }
-    return(acc1/length(Nr))
+    print(acc1/length(Nr))
 }
 ###########################
 # Main Function
 ###########################
 main = function(){
-    g = read.graph("test.txt", format="edgelist", directed=FALSE)
+    g = read.graph("facebook_combined.txt", format="edgelist", directed=FALSE)
     V(g)$id = 1:vcount(g)
     V(g)$degree = degree(g)
-    #x = as.character(1)
-    #y = as.character(4)
-    #z = paste(x,y,sep="|")
-    #g = delete_edges(g,z)
-    #plot(g)
-    print(accuracy_measure(g, "c"))
+    q = induced.subgraph(g, c(which(V(g)$id==415), neighbors(g, which(V(g)$id==415))))
+    accuracy_measure(q, "c")
+    accuracy_measure(q, "j")
+    accuracy_measure(q, "a")
+
 }
 main()
