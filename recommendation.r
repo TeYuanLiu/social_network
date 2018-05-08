@@ -47,7 +47,7 @@ recommend = function(g, uid, numr, measure){
     }
     n = sort(V(g)$measurement, decreasing=TRUE, index.return=TRUE)
     for(i in 1:length(recom_id_list)){
-        recom_id_list[i] = V(g)[n$ix[1]]$id
+        recom_id_list[i] = V(g)[n$ix[i]]$id
     }
     return(recom_id_list)
 }
@@ -95,8 +95,8 @@ accuracy_measure = function(g, measure){
 main = function(){
     g = read.graph("facebook_combined.txt", format="edgelist", directed=FALSE)
     V(g)$id = 1:vcount(g)
-    V(g)$degree = degree(g)
     q = induced.subgraph(g, c(which(V(g)$id==415), neighbors(g, which(V(g)$id==415))))
+    V(q)$degree = degree(q)
     accuracy_measure(q, "c")
     accuracy_measure(q, "j")
     accuracy_measure(q, "a")
